@@ -8,23 +8,13 @@ class TodoListViewController: UITableViewController {
     //  MARK: Inicializando o UserDefaults (Persistência no preferences)
     let defaults = UserDefaults.standard
     
-    //  MARK: Inicializando o FileManager (Persistencia em arquivos)
+    //  MARK: Inicializando o NSCoder (Persistencia em arquivos)
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
-        let newItem = Item()
-        newItem.title = "Buy new Macbook M1"
-        itemsArray.append(newItem)
         
-        let newItem2 = Item()
-        newItem2.title = "Buy iPhone 11"
-        itemsArray.append(newItem2)
-        
-        let newItem3 = Item()
-        newItem3.title = "Buy Playstation 5"
-        itemsArray.append(newItem3)
+        loadItems()
         
         //  Recupera os itens do UserDefaults
 //        if let items = defaults.array(forKey: "TodoListObj") as? [Item] {
@@ -97,6 +87,7 @@ class TodoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    //  MARK: Salva os items no diretório documentDirectory com NSCoder
     private func saveItems() {
         let encoder = PropertyListEncoder()
         
@@ -110,6 +101,19 @@ class TodoListViewController: UITableViewController {
         }
         
         self.tableView.reloadData()
+    }
+    
+    //  MARK: Recupera os dados no diretório documentDirectory com NSCoder
+    private func loadItems() {
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            
+            do {
+                itemsArray = try decoder.decode([Item].self, from: data)
+            } catch {
+                print("Error decoding item array. \(error)")
+            }
+        }
     }
     
 }
