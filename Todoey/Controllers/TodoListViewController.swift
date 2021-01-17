@@ -2,39 +2,63 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-    var itemArray: [String] = []
+    var itemsArray = [Item]()
     
     let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let newItem = Item()
+        newItem.title = "Buy new Macbook M1"
+        itemsArray.append(newItem)
+        
+        let newItem2 = Item()
+        newItem2.title = "Buy iPhone 11"
+        itemsArray.append(newItem2)
+        
+        let newItem3 = Item()
+        newItem3.title = "Buy Playstation 5"
+        itemsArray.append(newItem3)
+        
         //  Recupera os itens do UserDefaults
-        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
-            itemArray = items
-        }
+//        if let items = defaults.array(forKey: "TodoListObj") as? [Item] {
+//            itemsArray = items
+//        }
     }
 
     //  MARK: TableView Datasource - Cria as rows de acordo com o tamanho do array
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemArray.count
+        return itemsArray.count
     }
     
     //  MARK: TableView Datasource - Itera sobre o array e preenche as rows com o valor de cada iteração
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        //  Recupera a row pelo identifier
         let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
-        cell.textLabel?.text = itemArray[indexPath.row]
+        
+        //  Recupera o item
+        let item = itemsArray[indexPath.row]
+        
+        //  Adiciona um label na row pelo title do item
+        cell.textLabel?.text = item.title
+        
+        //  Adiciona o checkmark nas rows        
+        if item.isDone == true {
+            cell.accessoryType = .checkmark
+        } else {
+            cell.accessoryType = .none
+        }
+        
         return cell
     }
     
     //  MARK: TableView Delegate - Captura a row clicada
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //  Retorna a row clicada e adiciona um checkmark
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        //  Quando o item é clicado, o isDone recebe o oposto (se true recebe false, se false recebe true)
+        itemsArray[indexPath.row].isDone = !itemsArray[indexPath.row].isDone
+        
+        tableView.reloadData()
         
         //  Adiciona uma animação de clique na row
         tableView.deselectRow(at: indexPath, animated: true)
@@ -49,9 +73,12 @@ class TodoListViewController: UITableViewController {
         
         //  Cria uma ação para o alert e adiciona um novo item
         let action = UIAlertAction(title: "Add Item", style: .default, handler: {(action) in
-            self.itemArray.append(textField.text!)
+            let item = Item()
+            item.title = textField.text!
             
-            self.defaults.set(self.itemArray, forKey: "TodoListArray")
+            self.itemsArray.append(item)
+            
+            self.defaults.set(self.itemsArray, forKey: "TodoListObj")
             
             self.tableView.reloadData()
         })
