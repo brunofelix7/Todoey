@@ -43,12 +43,8 @@ class TodoListViewController: UITableViewController {
         //  Adiciona um label na row pelo title do item
         cell.textLabel?.text = item.title
         
-        //  Adiciona o checkmark nas rows        
-        if item.isDone == true {
-            cell.accessoryType = .checkmark
-        } else {
-            cell.accessoryType = .none
-        }
+        //  Adiciona o checkmark nas rows
+        cell.accessoryType = item.isDone ? .checkmark : .none
         
         return cell
     }
