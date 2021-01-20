@@ -39,7 +39,7 @@ class TodoListViewController: UITableViewController {
         cell.textLabel?.text = item.title
         
         //  Adiciona o checkmark nas rows
-        cell.accessoryType = item.isDone ? .checkmark : .none
+        cell.accessoryType = item.done ? .checkmark : .none
         
         return cell
     }
@@ -47,7 +47,7 @@ class TodoListViewController: UITableViewController {
     //  MARK: TableView Delegate - Captura a row clicada
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //  Quando o item é clicado, o isDone recebe o oposto (se true recebe false, se false recebe true)
-        itemsArray[indexPath.row].isDone = !itemsArray[indexPath.row].isDone
+        itemsArray[indexPath.row].done = !itemsArray[indexPath.row].done
         
         self.saveItems()
         
