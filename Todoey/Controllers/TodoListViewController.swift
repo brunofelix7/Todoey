@@ -1,4 +1,5 @@
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
 
@@ -11,10 +12,13 @@ class TodoListViewController: UITableViewController {
     //  MARK: Inicializando o NSCoder (Persistencia em arquivos)
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
+    //  MARK: Recupera o contexto de persistencia do Core Data
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loadItems()
+        //loadItems()
         
         //  Recupera os itens do UserDefaults
 //        if let items = defaults.array(forKey: "TodoListObj") as? [Item] {
@@ -64,8 +68,10 @@ class TodoListViewController: UITableViewController {
         
         //  Cria uma ação para o alert e adiciona um novo item
         let action = UIAlertAction(title: "Add Item", style: .default, handler: {(action) in
-            let item = Item()
+            //  Cria um novo item
+            let item = Item(context: self.context)
             item.title = textField.text!
+            item.done = false
             
             self.itemsArray.append(item)
             
@@ -87,33 +93,43 @@ class TodoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    //  MARK: Salva os items no diretório documentDirectory com NSCoder
     private func saveItems() {
-        let encoder = PropertyListEncoder()
-        
         do {
-            let data = try encoder.encode(itemsArray)
-            try data.write(to: dataFilePath!)
-            
-            print(dataFilePath!)
+            try context.save()
         } catch {
-            print("Error encoding item array. \(error)")
+            print("Error saving context. \(error)")
         }
         
         self.tableView.reloadData()
     }
     
-    //  MARK: Recupera os dados no diretório documentDirectory com NSCoder
-    private func loadItems() {
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            
-            do {
-                itemsArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("Error decoding item array. \(error)")
-            }
-        }
-    }
+    //  MARK: OLD CODE - Salva os items no diretório documentDirectory com NSCoder
+//    private func saveItems() {
+//        let encoder = PropertyListEncoder()
+//
+//        do {
+//            let data = try encoder.encode(itemsArray)
+//            try data.write(to: dataFilePath!)
+//
+//            print(dataFilePath!)
+//        } catch {
+//            print("Error encoding item array. \(error)")
+//        }
+//
+//        self.tableView.reloadData()
+//    }
+    
+    //  MARK: OLD CODE - Recupera os dados no diretório documentDirectory com NSCoder
+//    private func loadItems() {
+//        if let data = try? Data(contentsOf: dataFilePath!) {
+//            let decoder = PropertyListDecoder()
+//
+//            do {
+//                itemsArray = try decoder.decode([Item].self, from: data)
+//            } catch {
+//                print("Error decoding item array. \(error)")
+//            }
+//        }
+//    }
     
 }
