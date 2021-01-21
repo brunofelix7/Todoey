@@ -53,6 +53,9 @@ class TodoListViewController: UITableViewController {
         //  Quando o item é clicado, o isDone recebe o oposto (se true recebe false, se false recebe true)
         itemsArray[indexPath.row].done = !itemsArray[indexPath.row].done
         
+        //  MARK: UPDATE - Caso eu queira atualizar alguma propriedade
+        //itemsArray[indexPath.row].setValue("Completed", forKey: "title")
+        
         self.saveItems()
         
         //  Adiciona uma animação de clique na row
@@ -94,7 +97,7 @@ class TodoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    //  MARK: SAVE - Salva um item no SQLite
+    //  MARK: SAVE | UPDATE | DELETE - Comita as mudanças do context no SQLite
     private func saveItems() {
         do {
             try context.save()
