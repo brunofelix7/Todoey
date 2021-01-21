@@ -56,6 +56,10 @@ class TodoListViewController: UITableViewController {
         //  MARK: UPDATE - Caso eu queira atualizar alguma propriedade
         //itemsArray[indexPath.row].setValue("Completed", forKey: "title")
         
+        //  MARK: DELETE - Remove o item selecionado
+        //context.delete(itemsArray[indexPath.row])
+        //itemsArray.remove(at: indexPath.row)
+        
         self.saveItems()
         
         //  Adiciona uma animação de clique na row
