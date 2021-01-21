@@ -18,9 +18,9 @@ class TodoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //loadItems()
+        loadItems()
         
-        //  Recupera os itens do UserDefaults
+        //  MARK: OLD CODE - Recupera os itens do UserDefaults
 //        if let items = defaults.array(forKey: "TodoListObj") as? [Item] {
 //            itemsArray = items
 //        }
@@ -75,6 +75,7 @@ class TodoListViewController: UITableViewController {
             
             self.itemsArray.append(item)
             
+            //  MARK: OLD CODE - Recupera os dados do UserDefaults
             //self.defaults.set(self.itemsArray, forKey: "TodoListObj")
             
             self.saveItems()
@@ -93,14 +94,25 @@ class TodoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    //  MARK: SAVE - Salva um item no SQLite
     private func saveItems() {
         do {
             try context.save()
         } catch {
-            print("Error saving context. \(error)")
+            print("Error saving data in context. \(error)")
         }
         
         self.tableView.reloadData()
+    }
+    
+    //  MARK: READ - Recupera os items do SQLite
+    private func loadItems() {
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        do {
+            itemsArray = try context.fetch(request)
+        } catch {
+            print("Error fetching data from context. \(error)")
+        }
     }
     
     //  MARK: OLD CODE - Salva os items no diretório documentDirectory com NSCoder
