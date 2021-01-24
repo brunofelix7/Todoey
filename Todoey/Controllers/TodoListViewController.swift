@@ -17,7 +17,7 @@ class TodoListViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         loadItems()
         
         //  MARK: OLD CODE - Recupera os itens do UserDefaults
@@ -109,17 +109,18 @@ class TodoListViewController: UITableViewController {
             print("Error saving data in context. \(error)")
         }
         
-        self.tableView.reloadData()
+        tableView.reloadData()
     }
     
     //  MARK: READ - Recupera os items do SQLite
-    private func loadItems() {
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
+    private func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
         do {
             itemsArray = try context.fetch(request)
         } catch {
             print("Error fetching data from context. \(error)")
         }
+        
+        tableView.reloadData()
     }
     
     //  MARK: OLD CODE - Salva os items no diretório documentDirectory com NSCoder
@@ -150,5 +151,19 @@ class TodoListViewController: UITableViewController {
 //            }
 //        }
 //    }
+}
+
+//  MARK: Extensão para a SearchBar
+extension TodoListViewController : UISearchBarDelegate {
+    
+    //  MARK: Método de callback quando um texto é pesquisado
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+                
+        loadItems(with: request)
+    }
     
 }
