@@ -1,7 +1,7 @@
 import UIKit
 import CoreData
 
-class TodoListViewController: UITableViewController {
+class ItemViewController: UITableViewController {
 
     //  MARK: Inicializando o Array de items
     var itemsArray = [Item]()
@@ -34,7 +34,7 @@ class TodoListViewController: UITableViewController {
     //  MARK: TableView Datasource - Itera sobre o array e preenche as rows com o valor de cada iteração
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //  Recupera a row pelo identifier
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ItemCell", for: indexPath)
         
         //  Recupera o item
         let item = itemsArray[indexPath.row]
@@ -60,7 +60,7 @@ class TodoListViewController: UITableViewController {
         //context.delete(itemsArray[indexPath.row])
         //itemsArray.remove(at: indexPath.row)
         
-        self.saveItems()
+        saveItems()
         
         //  Adiciona uma animação de clique na row
         tableView.deselectRow(at: indexPath, animated: true)
@@ -74,7 +74,7 @@ class TodoListViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New Todoey Item", message: "Adds new itens to your todo list.", preferredStyle: .alert)
         
         //  Cria uma ação para o alert e adiciona um novo item
-        let action = UIAlertAction(title: "Add Item", style: .default, handler: {(action) in
+        let action = UIAlertAction(title: "Add", style: .default, handler: {(action) in
             //  Cria um novo item
             let item = Item(context: self.context)
             item.title = textField.text!
@@ -90,8 +90,8 @@ class TodoListViewController: UITableViewController {
         
         //  Adiciona um campo de input no alert
         alert.addTextField { (alertTextField) in
-            textField.placeholder = "Create new item"
             textField = alertTextField
+            textField.placeholder = "Create new item"
         }
         
         //  Adiciona a action para o alert
@@ -154,7 +154,7 @@ class TodoListViewController: UITableViewController {
 }
 
 //  MARK: Extensão para a SearchBar
-extension TodoListViewController : UISearchBarDelegate {
+extension ItemViewController : UISearchBarDelegate {
     
     //  MARK: Método de callback quando um texto é pesquisado
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
