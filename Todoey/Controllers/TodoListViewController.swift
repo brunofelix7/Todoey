@@ -166,4 +166,16 @@ extension TodoListViewController : UISearchBarDelegate {
         loadItems(with: request)
     }
     
+    //  MARK: Método de callback quando o texto da SearchBar é alterado
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            //  MARK: Retorna a SearchBar para o estado inicial em background
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+    }
+    
 }
