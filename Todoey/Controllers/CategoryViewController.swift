@@ -33,9 +33,19 @@ class CategoryViewController: UITableViewController {
     
     //  MARK: TableView Delegate - Captura a row clicada
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        saveCategories()
+        //  Navega para outra ViewController através de um identificador
+        performSegue(withIdentifier: "goToItems", sender: self)
         
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    //  MARK: Indica para onde eu devo navegar e envia algum parâmetro para o outro controller
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! ItemViewController
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.selectedCategory = categoriesArray[indexPath.row]
+        }
     }
 
     //  MARK: Bar Item Add - Adiciona uma nova categoria

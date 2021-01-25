@@ -6,6 +6,13 @@ class ItemViewController: UITableViewController {
     //  MARK: Inicializando o Array de items
     var itemsArray = [Item]()
     
+    //  MARK: Categoria recebida por parâmetro através de um Segue
+    var selectedCategory: Category? {
+        didSet {
+            loadItems()
+        }
+    }
+    
     //  MARK: Inicializando o UserDefaults (Persistência no preferences)
     let defaults = UserDefaults.standard
     
@@ -17,9 +24,7 @@ class ItemViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
-        loadItems()
-        
+
         //  MARK: OLD CODE - Recupera os itens do UserDefaults
 //        if let items = defaults.array(forKey: "TodoListObj") as? [Item] {
 //            itemsArray = items
@@ -79,6 +84,7 @@ class ItemViewController: UITableViewController {
             let item = Item(context: self.context)
             item.title = textField.text!
             item.done = false
+            item.parentCategory = self.selectedCategory
             
             self.itemsArray.append(item)
             
@@ -113,7 +119,16 @@ class ItemViewController: UITableViewController {
     }
     
     //  MARK: READ - Recupera os items do SQLite
-    private func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
+    private func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        
+        //  Se for passado um predicate, combina o predicate de categoria com o recebido por parâmetro
+        if let additionalPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+        } else {
+            request.predicate = categoryPredicate
+        }
+        
         do {
             itemsArray = try context.fetch(request)
         } catch {
@@ -160,10 +175,11 @@ extension ItemViewController : UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         let request: NSFetchRequest<Item> = Item.fetchRequest()
         
-        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        
         request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
                 
-        loadItems(with: request)
+        loadItems(with: request, predicate: predicate)
     }
     
     //  MARK: Método de callback quando o texto da SearchBar é alterado
